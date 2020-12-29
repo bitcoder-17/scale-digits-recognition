@@ -5,12 +5,12 @@ from argparse import ArgumentParser
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('input_video', type=str)
-    parser.add_argument('output_dir', type=str)
-    parser.add_argument('--skip', type=int, default=10)
-    parser.add_argument('--start', '-s', type=int, default=0)
-    parser.add_argument('--end', '-e', type=int, default=None)
-    parser.add_argument('--ext', type=str, default='png')
+    parser.add_argument('input_video', type=str, help='Input video path')
+    parser.add_argument('output_dir', type=str, help='Output directory where the frames are extracted to')
+    parser.add_argument('--skip', type=int, default=10, help='The number of frames to skip, e.g. 10')
+    parser.add_argument('--start', '-s', type=int, default=0, help='The start frame index')
+    parser.add_argument('--end', '-e', type=int, default=None, help='The end frame index')
+    parser.add_argument('--ext', type=str, default='png', help='Image extension')
 
     args = parser.parse_args()
 

@@ -31,7 +31,7 @@ if __name__ == "__main__":
             break
 
         if begin_idx <= i:  # exclude the last index since we start from zero
-            if i >= end_idx:
+            if end_idx is not None and i >= end_idx:
                 break
             if i % skip == 0:
                 output_path = output_dir.joinpath(f'{video_path.stem}_{i}.{ext}')

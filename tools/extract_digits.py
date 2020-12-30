@@ -10,6 +10,22 @@ def binarize_threshold(image: np.ndarray):
     return binary
 
 
+def binarize_kmean(image: np.ndarray):
+    K = 2  # background and foreground
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    flags = cv2.KMEANS_PP_CENTERS
+    kmean_input = image.reshape(-1, image.shape[-1]).astype(np.float32)
+    _, labels, _ = cv2.kmeans(kmean_input, K, None, criteria, 1, flags)
+
+    if np.average(labels) > 0.65:
+        # class 1 should be background
+        labels = 1 - labels
+
+    binary = labels.reshape((image.shape[0], image.shape[1])).astype(np.uint8) * 255
+    cv2.imshow('Binary', binary)
+    return binary
+
+
 def improve_mask(mask: np.ndarray):
     contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
     bboxes = [cv2.boundingRect(contour) for contour in contours]
@@ -41,6 +57,7 @@ def character_segmentation(image: np.ndarray):
 
     image = image[margin_row:image.shape[0] - margin_row, margin_col:image.shape[1] - margin_col]
     binary = binarize_threshold(image)
+    # binary = binarize_kmean(image)
     binary = improve_mask(binary)
 
     count_col = np.count_nonzero(binary, axis=0)
@@ -51,8 +68,8 @@ def character_segmentation(image: np.ndarray):
     mask_col = np.zeros_like(binary)
     mask_col[:, count_col > 0.03] = 255.
 
-    mask_color = np.zeros_like(image)
-    mask_color[mask_col != 0] = (0, 0, 255)
+    # mask_color = np.zeros_like(binary.shape[0], binary.shape[1], )
+    # mask_color[mask_col != 0] = (0, 0, 255)
 
     # alpha = 0.3
     # blend = cv2.addWeighted(image, alpha, mask_color, 1 - alpha, 1)

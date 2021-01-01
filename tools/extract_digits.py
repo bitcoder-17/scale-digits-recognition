@@ -4,6 +4,17 @@ import numpy as np
 from argparse import ArgumentParser
 
 
+COLORS = [
+    (255, 0, 0),
+    (0, 255, 0),
+    (0, 0, 255),
+    (255, 255, 0),
+    (0, 255, 255),
+    (255, 0, 255),
+    (255, 255, 255),
+]
+
+
 def binarize_threshold(image: np.ndarray):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     binary = cv2.inRange(hsv, (0, 0, 0), (180, 255, 200))
@@ -54,6 +65,8 @@ def improve_mask(mask: np.ndarray):
 def character_segmentation(image: np.ndarray):
     margin_row = int(image.shape[0] * 0.05)
     margin_col = int(image.shape[1] * 0.075)
+    padding_digit_x_factor = 0.05  # percent
+    padding_digit_y_factor = 0
 
     image = image[margin_row:image.shape[0] - margin_row, margin_col:image.shape[1] - margin_col]
     binary = binarize_threshold(image)
@@ -79,7 +92,10 @@ def character_segmentation(image: np.ndarray):
     chars = []
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
-        rect = (x + margin_col, y + margin_row, w, h)
+        padding_digit_x = int(x * padding_digit_x_factor)
+        padding_digit_y = int(y * padding_digit_y_factor)
+        rect = (x - padding_digit_x, y - padding_digit_y, w + padding_digit_x*2, h + padding_digit_y*2)
+        rect = (rect[0] + margin_col, rect[1] + margin_row, rect[2], rect[3])
         chars.append(rect)
     return chars
 
@@ -102,17 +118,20 @@ if __name__ == "__main__":
         image = cv2.imread(str(image_path))
         char_bboxes = character_segmentation(image)
         char_bboxes = sorted(char_bboxes, key=lambda box: box[0], reverse=True)
-        for i, (x, y, w, h) in enumerate(char_bboxes):
-            crop = image[y:y+h, x:x+w]
-            output_path = output_dir.joinpath(f'{image_path.stem}_{i}.{args.ext}')
-            cv2.imwrite(str(output_path), crop)
-            cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 1)
 
         if args.visualize:
+            for i, (x, y, w, h) in enumerate(char_bboxes):
+                crop = image[y:y+h, x:x+w]
+                cv2.rectangle(image, (x, y), (x+w, y+h), COLORS[i % len(COLORS)], 1)
             cv2.imshow('Digits', image)
             key = cv2.waitKey(0)
             if key == ord('q') or key == 27:
                 break
+        else:
+            for i, (x, y, w, h) in enumerate(char_bboxes):
+                crop = image[y:y+h, x:x+w]
+                output_path = output_dir.joinpath(f'{image_path.stem}_{i}.{args.ext}')
+                cv2.imwrite(str(output_path), crop)
 
     cv2.destroyAllWindows()
     print('Done')

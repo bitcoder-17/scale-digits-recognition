@@ -104,7 +104,7 @@ if __name__ == "__main__":
         char_bboxes = sorted(char_bboxes, key=lambda box: box[0], reverse=True)
         for i, (x, y, w, h) in enumerate(char_bboxes):
             crop = image[y:y+h, x:x+w]
-            output_path = output_dir.joinpath(f'{image_path.stem}_{i}.jpg')
+            output_path = output_dir.joinpath(f'{image_path.stem}_{i}.{args.ext}')
             cv2.imwrite(str(output_path), crop)
             cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 1)
 

@@ -16,29 +16,29 @@ if __name__ == "__main__":
                 "label": "digits",
                 "points": [
                     [
-                        635.4782608695652,
-                        567.4782608695652
+                        614.0672782874618,
+                        553.8226299694189
                     ],
                     [
-                        708.695652173913,
-                        559.6521739130435
+                        727.5229357798165,
+                        543.1192660550458
                     ],
                     [
-                        710.0869565217391,
-                        585.3913043478261
+                        729.9694189602446,
+                        596.0244648318043
                     ],
                     [
-                        637.0434782608696,
-                        593.7391304347826
+                        616.8195718654434,
+                        609.480122324159
                     ]
                 ],
-                "group_id": 'null',
+                "group_id": None,
                 "shape_type": "polygon",
                 "flags": {}
             }
         ],
         "imagePath": "",
-        "imageData": "",
+        "imageData": None,
         "imageHeight": 1080,
         "imageWidth": 1440
     }
@@ -53,6 +53,5 @@ if __name__ == "__main__":
         json_dict = copy.deepcopy(json_dict_template)
         json_dict['imagePath'] = frame_path.name
         encoded_image = base64.b64encode(open(frame_path, "rb").read())
-        json_dict['imageData'] = encoded_image.decode('utf-8')
         json_dict['imageWidth'], json_dict['imageHeight'] = Image.open(frame_path).size
         json.dump(json_dict, open(frame_path.with_suffix('.json'), 'wt', encoding='utf8'), ensure_ascii=False, indent=4)

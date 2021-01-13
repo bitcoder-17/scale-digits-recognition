@@ -22,7 +22,7 @@ if __name__ == "__main__":
         image_path = json_path.with_suffix(f'.{args.ext}')
         image = cv2.imread(str(image_path))
 
-        json_dict['shapes'] = sorted(json_dict['shapes'], key=lambda shape: min(shape['points'][0][0], shape['points'][1][0]))
+        json_dict['shapes'] = sorted(json_dict['shapes'], key=lambda shape: min(shape['points'][0][0], shape['points'][1][0]), reverse=True)
         for i, shape in enumerate(json_dict['shapes']):
             p1, p2 = shape['points']
             x1, x2 = int(min(p1[0], p2[0])), int(max(p1[0], p2[0]))

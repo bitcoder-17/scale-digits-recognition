@@ -27,6 +27,7 @@ def main():
     parser.add_argument("output_dir", help="output dataset directory")
     parser.add_argument("labels", help="labels file")
     parser.add_argument("--noviz", help="no visualization", action="store_true")
+    parser.add_argument('--ext', default='png')
     args = parser.parse_args()
 
     if osp.exists(args.output_dir):
@@ -64,11 +65,11 @@ def main():
         label_file = labelme.LabelFile(filename=filename)
 
         base = osp.splitext(osp.basename(filename))[0]
-        out_img_file = osp.join(args.output_dir, "JPEGImages", base + ".jpg")
+        out_img_file = osp.join(args.output_dir, "JPEGImages", base + f".{args.ext}")
         out_xml_file = osp.join(args.output_dir, "Annotations", base + ".xml")
         if not args.noviz:
             out_viz_file = osp.join(
-                args.output_dir, "AnnotationsVisualization", base + ".jpg"
+                args.output_dir, "AnnotationsVisualization", base + f".{args.ext}"
             )
 
         img = labelme.utils.img_data_to_arr(label_file.imageData)
@@ -77,7 +78,7 @@ def main():
         maker = lxml.builder.ElementMaker()
         xml = maker.annotation(
             maker.folder(),
-            maker.filename(base + ".jpg"),
+            maker.filename(base + f".{args.ext}"),
             maker.database(),  # e.g., The VOC2007 Database
             maker.annotation(),  # e.g., Pascal VOC2007
             maker.image(),  # e.g., flickr
@@ -106,6 +107,11 @@ def main():
             # swap if min is larger than max.
             xmin, xmax = sorted([xmin, xmax])
             ymin, ymax = sorted([ymin, ymax])
+
+            xmin = int(xmin)
+            xmax = int(xmax)
+            ymin = int(ymin)
+            ymax = int(ymax)
 
             bboxes.append([ymin, xmin, ymax, xmax])
             labels.append(class_id)

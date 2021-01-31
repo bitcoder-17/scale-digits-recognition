@@ -331,7 +331,7 @@ class App(QMainWindow):
         viewMenu.addAction(prevAction)
 
         self.currentIndex = 0
-        self.imagePaths = sorted(list(imageDir.glob(f'*.{ext}')))[200:]
+        self.imagePaths = sorted(list(imageDir.glob(f'*.{ext}')))[:]
         assert len(self.imagePaths) > 0
         self.config.setPad((45, 20, 30, 20))
         self.config.setNumber('')

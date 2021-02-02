@@ -63,7 +63,10 @@ def order_points(points):
         else:
             pts['tr'] = p
 
-    return [pts['tl'], pts['tr'], pts['br'], pts['bl']]
+    if len(pts.keys()) == 4:
+        return True, [pts['tl'], pts['tr'], pts['br'], pts['bl']]
+
+    return False, None
 
 
 def distance(p1, p2):
@@ -84,7 +87,9 @@ def crop_roi_by_corners(pilImage):
     if len(corners) != 4:
         return False, None
 
-    corners = order_points(corners)
+    ret, corners = order_points(corners)
+    if not ret:
+        return False, None
     # for x, y in corners:
     #     x, y = int(x), int(y)
     #     cv2.circle(image, (x, y), 3, (255, 0, 0), -1)
